@@ -1,43 +1,77 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node {
-    int data;
-    struct Node *next;
-    struct Node *prev;
-};
+typedef struct {
+    int *arr;
+    int top;
+    int cap;
+} Stack;
 
-struct Node *createNode(int value) {
-    struct Node *newNode = (struct Node *) malloc(sizeof(struct Node));
-    newNode->data = value;
-    newNode->next = NULL;
-    newNode->prev = NULL;
-    return newNode;
-}
-
-void printList(struct Node *head) {
-    struct Node *current = head;
-    while (current != NULL) {
-        printf("data: %d\n", current->data);
-        current = current->next;
+Stack* createStack(int capacity) {
+    Stack *stack = (Stack*) malloc(sizeof(Stack));
+    if (!stack) {
+        return 0;
     }
+
+    stack->cap = capacity;
+    stack->top = -1;
+    stack->arr = (int*) malloc(capacity * sizeof(int));
+    if (!stack->arr) {
+        return 0;
+    }
+
+    return stack;
 }
 
+int isFull(Stack *stack) {
+    return stack->top == stack->cap - 1;
+}
+
+int isEmpty(Stack *stack) {
+    return stack->top == -1;
+}
+
+void push(Stack *stack, int value) {
+    if (isFull(stack)) {
+        return;
+    }
+    stack->top += 1;
+    stack->arr[stack->top] = value;
+}
+
+int pop(Stack *stack) {
+    if (isEmpty(stack)) {
+        return -1;
+    }
+    return stack->arr[stack->top--];
+}
+
+int peek(Stack *stack) {
+    if (isEmpty(stack)) {
+        return -1;
+    }
+    return stack->arr[stack->top];
+}
+
+void printStack(Stack *stack) {
+    printf("stack={\n");
+    printf("element:");
+    for (int i = stack->top; i >= 0; i--) {
+        printf("%d ", stack->arr[i]);
+    }
+    printf("\ntop: %d", stack->top);
+    printf("\ncap: %d", stack->cap);
+    printf("\n}");
+}
 int main() {
-    struct Node *node1 = createNode(1);
-    struct Node *node2 = createNode(2);
-    struct Node *node3 = createNode(3);
-    struct Node *node4 = createNode(4);
-    struct Node *node5 = createNode(5);
-    node1->prev = NULL;
-    node2->prev = node1;
-    node3->prev = node2;
-    node4->prev = node3;
-    node5->prev = node4;
-    node1->next = node2;
-    node2->next = node3;
-    node3->next = node4;
-    node4->next = node5;
-    node5->next = NULL;
-    printList(node1);
+    Stack *s = createStack(5);
+    for (int i = 0; i < 5; i++) {
+        int value;
+        scanf("%d", &value);
+        push(s, value);
+    }
+
+    printStack(s);
+
+    return 0;
 }
